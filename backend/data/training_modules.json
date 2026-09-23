@@ -1,0 +1,82 @@
+[
+  {
+    "id": "CAT-TRN-101",
+    "title": "Excavator Pre-Shift Walkaround & Cab Ergonomics",
+    "category": "Pre-Operation Safety",
+    "duration_min": 12,
+    "thumbnail": "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?auto=format&fit=crop&w=600&q=80",
+    "video_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    "summary": "Master the 360-degree daily walkaround inspection: hydraulic fluid levels, track tension, cab seatbelt sensors, and Grade Control display zeroing.",
+    "key_takeaways": [
+      "Check track sag (standard 25-40mm for standard steel shoes)",
+      "Verify hydraulic oil sight glass when stick cylinder is fully extended",
+      "Ensure cab emergency egress hammer and primary seatbelt latch click engagement"
+    ],
+    "badge_unlocked": "Pre-Flight Master",
+    "required_for": ["Excavator", "Wheel Loader"]
+  },
+  {
+    "id": "CAT-TRN-102",
+    "title": "Trenching Safety, Bench Heights & Cave-in Prevention",
+    "category": "Excavation Dynamics",
+    "duration_min": 18,
+    "thumbnail": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80",
+    "video_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    "summary": "OSHA Subpart P trenching standards. Proper boom placement relative to trench edge, surcharge load clearance, and spoil pile setbacks.",
+    "key_takeaways": [
+      "Spoil pile must remain minimum 2.0 feet (0.61m) back from trench edge",
+      "Never swing bucket over personnel or unprotected trench boxes",
+      "Position tracks perpendicular to trench edge for maximum stability"
+    ],
+    "badge_unlocked": "Trench Safety Pro",
+    "required_for": ["Excavator"]
+  },
+  {
+    "id": "CAT-TRN-103",
+    "title": "Cat Grade 3D Automation & Bucket Float Optimization",
+    "category": "Efficiency & Technology",
+    "duration_min": 15,
+    "thumbnail": "https://images.unsplash.com/photo-1581094288338-2314dddb7ece?auto=format&fit=crop&w=600&q=80",
+    "video_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    "summary": "Utilizing Cat Grade with 3D semi-autonomous digging to prevent over-excavation, save fuel, and achieve grade in a single pass.",
+    "key_takeaways": [
+      "Set elevation targets on the in-cab display to lock boom depth",
+      "Single-pass grade reduces cycle passes by up to 35%",
+      "Engage bucket float on slope grading backfill to avoid gouging"
+    ],
+    "badge_unlocked": "Precision Grader",
+    "required_for": ["Excavator"]
+  },
+  {
+    "id": "CAT-TRN-104",
+    "title": "Eco-Mode Idling Reduction & Fuel Conservation",
+    "category": "Sustainability & Cost",
+    "duration_min": 10,
+    "thumbnail": "https://images.unsplash.com/photo-1541888946425-d0fbb1861564?auto=format&fit=crop&w=600&q=80",
+    "video_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    "summary": "How excessive idling (>20 min/hr) degrades DPF regeneration and wastes 4.5L/hr. Leveraging Auto-Engine Idle Shutdown (AES).",
+    "key_takeaways": [
+      "Engage Cat Auto-Idle (drops engine from 1800 to 1000 RPM after 5s inactive)",
+      "Set Auto-Engine Shutdown timer to 3 minutes during extended haul waits",
+      "Idling burns $8,200 in wasted diesel per machine annually"
+    ],
+    "badge_unlocked": "Eco-Titan",
+    "required_for": ["Excavator", "Wheel Loader"]
+  },
+  {
+    "id": "CAT-TRN-105",
+    "title": "Wheel Loader V-Cycle & Truck Target Loading",
+    "category": "Loader Dynamics",
+    "duration_min": 14,
+    "thumbnail": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80",
+    "video_url": "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+    "summary": "The tight V-pattern cycle for Cat 950/980 loaders. Minimizing tire slip, optimizing bucket rollback angle, and centered payload distribution.",
+    "key_takeaways": [
+      "Keep V-angle under 45 degrees to save tire wear and reduce travel time",
+      "Use rimpull control in wet rock surfaces to eliminate tire spin",
+      "Center payload over haul truck axles to prevent rollover"
+    ],
+    "badge_unlocked": "Master Loader",
+    "required_for": ["Wheel Loader"]
+  }
+]
