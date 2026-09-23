@@ -1,0 +1,62 @@
+[
+  {
+    "machine_id": "CAT-336-EX01",
+    "machine_type": "Excavator",
+    "power_type": "Diesel",
+    "site_type": "Infrastructure Trenching",
+    "model": "Cat 336 Next Gen",
+    "operating_hours": 3432.5,
+    "machine_condition": "Optimal",
+    "swing_radius_m": 7.2,
+    "danger_zone_m": 4.5,
+    "caution_zone_m": 9.0
+  },
+  {
+    "machine_id": "CAT-950-LD02",
+    "machine_type": "Wheel Loader",
+    "power_type": "Diesel",
+    "site_type": "Pit Aggregate Loading",
+    "model": "Cat 950M High Lift",
+    "operating_hours": 5140.0,
+    "machine_condition": "Good",
+    "swing_radius_m": 4.0,
+    "danger_zone_m": 5.0,
+    "caution_zone_m": 10.0
+  },
+  {
+    "machine_id": "CAT-349-EX03",
+    "machine_type": "Excavator",
+    "power_type": "Electric",
+    "site_type": "Urban Tunneling",
+    "model": "Cat 349E Tethered Electric",
+    "operating_hours": 1820.0,
+    "machine_condition": "Optimal",
+    "swing_radius_m": 8.0,
+    "danger_zone_m": 5.0,
+    "caution_zone_m": 10.5
+  },
+  {
+    "machine_id": "CAT-D8T-DZ04",
+    "machine_type": "Dozer",
+    "power_type": "Diesel",
+    "site_type": "Overburden Stripping",
+    "model": "Cat D8T Track-Type Tractor",
+    "operating_hours": 4210.0,
+    "machine_condition": "Good",
+    "swing_radius_m": 3.5,
+    "danger_zone_m": 4.0,
+    "caution_zone_m": 8.5
+  },
+  {
+    "machine_id": "CAT-777-HT05",
+    "machine_type": "Haul Truck",
+    "power_type": "Electric",
+    "site_type": "Quarry Haulage",
+    "model": "Cat 777XE Battery-Electric",
+    "operating_hours": 1150.0,
+    "machine_condition": "Optimal",
+    "swing_radius_m": 5.5,
+    "danger_zone_m": 6.0,
+    "caution_zone_m": 12.0
+  }
+]

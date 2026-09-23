@@ -1,0 +1,41 @@
+[
+  {
+    "operator_id": "OP1001",
+    "module_id": "TRN-PROX-101",
+    "module_name": "Blind Spot Awareness & Proximity Defenses",
+    "assigned_reason": "Proximity Sensor Caution Trigger on Sep 17",
+    "assigned_date": "2026-09-17T09:30:00Z",
+    "completion_status": "Completed",
+    "assessment_score": 96.0,
+    "completion_date": "2026-09-17T17:15:00Z",
+    "pre_training_violations": 4,
+    "post_training_violations": 1,
+    "improvement_pct": 75.0
+  },
+  {
+    "operator_id": "OP1001",
+    "module_id": "TRN-IDLE-202",
+    "module_name": "Efficient Machine Operation & Idling Elimination",
+    "assigned_reason": "Idling Ratio flagged above 28% threshold on Sep 19",
+    "assigned_date": "2026-09-19T14:00:00Z",
+    "completion_status": "Assigned",
+    "assessment_score": null,
+    "completion_date": null,
+    "pre_training_violations": 3,
+    "post_training_violations": 0,
+    "improvement_pct": 0.0
+  },
+  {
+    "operator_id": "OP1003",
+    "module_id": "TRN-SMTH-404",
+    "module_name": "Compound Bucket Motions & Smooth Cycle Mastery",
+    "assigned_reason": "Excessive G-force swing braking detected",
+    "assigned_date": "2026-09-18T10:00:00Z",
+    "completion_status": "Completed",
+    "assessment_score": 88.0,
+    "completion_date": "2026-09-18T18:00:00Z",
+    "pre_training_violations": 6,
+    "post_training_violations": 2,
+    "improvement_pct": 66.7
+  }
+]

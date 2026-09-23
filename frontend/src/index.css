@@ -4,12 +4,12 @@
 
 @layer base {
   body {
-    @apply bg-cab-black text-gray-100;
+    @apply bg-nordic-base text-nordic-text;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
-/* Custom cab-friendly touch styles */
+/* Rugged Cab Tablet Touch Targets (Minimum height 48px / h-12) */
 .touch-btn {
   @apply min-h-[48px] px-5 py-3 rounded-lg font-bold text-base transition-all duration-150 flex items-center justify-center gap-2 active:scale-95 select-none;
 }
@@ -21,41 +21,25 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #16161B;
+  background: #121418;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #363640;
+  background: #2E3440;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FFCD11;
+  background: #88C0D0;
 }
 
-/* Radar ping effect */
-@keyframes radarPing {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.9;
-  }
-  100% {
-    transform: scale(2.2);
-    opacity: 0;
-  }
-}
-
-.radar-ping {
-  animation: radarPing 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-/* Heavy Machinery striped warning bar */
+/* Striped hazard caution bar */
 .warning-stripes {
   background: repeating-linear-gradient(
     -45deg,
-    #FFCD11,
-    #FFCD11 14px,
-    #0F0F11 14px,
-    #0F0F11 28px
+    #EBCB8B,
+    #EBCB8B 14px,
+    #121418 14px,
+    #121418 28px
   );
 }

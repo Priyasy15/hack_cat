@@ -1,0 +1,42 @@
+[
+  {
+    "operator_id": "OP1001",
+    "name": "Arun Kumar",
+    "role": "Lead Excavator Specialist",
+    "skill_level": "Advanced",
+    "experience_hours": 4850,
+    "assigned_machine_id": "CAT-336-EX01"
+  },
+  {
+    "operator_id": "OP1002",
+    "name": "Sarah Jenkins",
+    "role": "Wheel Loader Master",
+    "skill_level": "Advanced",
+    "experience_hours": 5200,
+    "assigned_machine_id": "CAT-950-LD02"
+  },
+  {
+    "operator_id": "OP1003",
+    "name": "Marcus Vance",
+    "role": "Apprentice Operator",
+    "skill_level": "Beginner",
+    "experience_hours": 420,
+    "assigned_machine_id": "CAT-336-EX01"
+  },
+  {
+    "operator_id": "OP1004",
+    "name": "Elena Rostova",
+    "role": "Heavy Trench & Quarry Lead",
+    "skill_level": "Advanced",
+    "experience_hours": 6400,
+    "assigned_machine_id": "CAT-349-EX03"
+  },
+  {
+    "operator_id": "OP1005",
+    "name": "Tom Chen",
+    "role": "Haul Truck & Earthmover Operator",
+    "skill_level": "Intermediate",
+    "experience_hours": 2150,
+    "assigned_machine_id": "CAT-777-HT05"
+  }
+]

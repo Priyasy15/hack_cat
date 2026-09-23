@@ -1,0 +1,6 @@
+operator_id,name,role,skill_level,experience_hours,assigned_machine_id
+OP1001,Arun Kumar,Lead Excavator Specialist,Advanced,4850,CAT-336-EX01
+OP1002,Sarah Jenkins,Wheel Loader Master,Advanced,5200,CAT-950-LD02
+OP1003,Marcus Vance,Apprentice Operator,Beginner,420,CAT-336-EX01
+OP1004,Elena Rostova,Heavy Trench & Quarry Lead,Advanced,6400,CAT-349-EX03
+OP1005,Tom Chen,Haul Truck & Earthmover Operator,Intermediate,2150,CAT-777-HT05

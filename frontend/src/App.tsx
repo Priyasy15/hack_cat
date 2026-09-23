@@ -1,52 +1,53 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { CabHeader } from './components/CabHeader';
-import { MaintenanceBanner } from './components/MaintenanceBanner';
-import { TaskDashboard } from './components/TaskDashboard';
-import { SafetyRadarModule } from './components/SafetyRadarModule';
-import { AnomalyScorecard } from './components/AnomalyScorecard';
-import { TaskEstimator } from './components/TaskEstimator';
-import { AiAssistantPanel } from './components/AiAssistantPanel';
-import { TrainingHub } from './components/TrainingHub';
-import { Leaderboard } from './components/Leaderboard';
-import { ShiftRecapModal } from './components/ShiftRecapModal';
+import React, { useState, useEffect } from 'react';
+import { CabTopBar } from './components/CabTopBar';
+import { OperatorLoginModal } from './components/OperatorLoginModal';
+import { ShiftBriefingView } from './components/ShiftBriefingView';
+import { AdaptiveTaskDashboard } from './components/AdaptiveTaskDashboard';
+import { CurrentTaskView } from './components/CurrentTaskView';
+import { SafetyIntelligenceView } from './components/SafetyIntelligenceView';
+import { Live2DSafetyMap } from './components/Live2DSafetyMap';
+import { AroundMeRadarView } from './components/AroundMeRadarView';
+import { SafetyEventReplay } from './components/SafetyEventReplay';
+import { IncidentReportModal } from './components/IncidentReportModal';
+import { PersonalizedTrainingHub } from './components/PersonalizedTrainingHub';
+import { TrainingEffectivenessView } from './components/TrainingEffectivenessView';
+import { OperatorSafetyScorecard } from './components/OperatorSafetyScorecard';
+import { InCabAiModal } from './components/InCabAiModal';
+import { ShiftRecapView } from './components/ShiftRecapView';
 
 import {
   Operator,
   Machine,
-  Telemetry,
+  LiveTelemetry,
+  AdaptiveTask,
   RadarResponse,
-  Incident,
-  Task,
-  Scorecard,
-  MaintenanceData
+  MapEntities,
+  SafetyEvent
 } from './types';
 import { api } from './api';
 
 export const App: React.FC = () => {
   const [operators, setOperators] = useState<Operator[]>([]);
   const [machines, setMachines] = useState<Machine[]>([]);
-  const [selectedOperator, setSelectedOperator] = useState<Operator | null>(null);
-  const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
-  const [currentWeather, setCurrentWeather] = useState<string>('Muddy/Wet');
+  const [activeOperator, setActiveOperator] = useState<Operator | null>(null);
+  const [activeMachine, setActiveMachine] = useState<Machine | null>(null);
 
-  const [telemetry, setTelemetry] = useState<Telemetry | null>(null);
+  const [activeView, setActiveView] = useState<string>('shift_briefing');
+  const [telemetry, setTelemetry] = useState<LiveTelemetry | null>(null);
   const [radar, setRadar] = useState<RadarResponse | null>(null);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [scorecard, setScorecard] = useState<Scorecard | null>(null);
-  const [maintenance, setMaintenance] = useState<MaintenanceData | null>(null);
+  const [mapEntities, setMapEntities] = useState<MapEntities | null>(null);
+  const [tasks, setTasks] = useState<AdaptiveTask[]>([]);
+  const [events, setEvents] = useState<SafetyEvent[]>([]);
 
-  // Selected task to feed into TaskEstimator
-  const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
+  // Modals state
+  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
+  const [isAiOpen, setIsAiOpen] = useState<boolean>(false);
+  const [isRecapOpen, setIsRecapOpen] = useState<boolean>(false);
+  const [isIncidentReportOpen, setIsIncidentReportOpen] = useState<boolean>(false);
 
-  // Modals
-  const [isTrainingOpen, setIsTrainingOpen] = useState(false);
-  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
-  const [isShiftRecapOpen, setIsShiftRecapOpen] = useState(false);
-
-  // 1. Initial Load: Operators & Machines
+  // 1. Initial Load: Operators and Machines
   useEffect(() => {
-    const initApp = async () => {
+    const init = async () => {
       try {
         const [ops, machs] = await Promise.all([
           api.getOperators(),
@@ -54,241 +55,259 @@ export const App: React.FC = () => {
         ]);
         setOperators(ops);
         setMachines(machs);
-        if (ops.length > 0) setSelectedOperator(ops[0]);
-        if (machs.length > 0) setSelectedMachine(machs[0]);
+        if (ops.length > 0) setActiveOperator(ops[0]); // Default OP1001 - Arun Kumar
+        if (machs.length > 0) setActiveMachine(machs[0]); // Default CAT-336-EX01
       } catch (err) {
-        console.error('Failed to initialize operators and machines', err);
+        console.error('Failed to initialize app', err);
       }
     };
-    initApp();
+    init();
   }, []);
 
-  // 2. Fetch Tasks when Operator or Weather changes
+  // 2. Fetch Tasks when Operator changes
   useEffect(() => {
-    if (!selectedOperator) return;
+    if (!activeOperator) return;
     const fetchTasks = async () => {
       try {
-        const data = await api.getTasks(selectedOperator.id, currentWeather);
-        setTasks(data.tasks);
+        const res = await api.getAdaptiveTasks(activeOperator.operator_id);
+        setTasks(res.tasks);
       } catch (err) {
         console.error('Failed to load tasks', err);
       }
     };
     fetchTasks();
-  }, [selectedOperator, currentWeather]);
+  }, [activeOperator]);
 
-  // 3. Fetch Scorecard when Operator changes
+  // 3. HTTP Polling Real-Time Engine (2.5 sec interval)
   useEffect(() => {
-    if (!selectedOperator) return;
-    const fetchScorecard = async () => {
-      try {
-        const sc = await api.getScorecard(selectedOperator.id);
-        setScorecard(sc);
-      } catch (err) {
-        console.error('Failed to load scorecard', err);
-      }
-    };
-    fetchScorecard();
-  }, [selectedOperator]);
+    if (!activeOperator || !activeMachine) return;
 
-  // 4. Fetch Maintenance when Machine changes
-  useEffect(() => {
-    if (!selectedMachine) return;
-    const fetchMaintenance = async () => {
+    const poll = async () => {
       try {
-        const m = await api.getMaintenance(selectedMachine.id);
-        setMaintenance(m);
-      } catch (err) {
-        console.error('Failed to load maintenance', err);
-      }
-    };
-    fetchMaintenance();
-  }, [selectedMachine]);
-
-  // 5. Polling Real-Time Engine (2.5 seconds HTTP polling interval)
-  useEffect(() => {
-    if (!selectedOperator || !selectedMachine) return;
-
-    const pollLiveMetrics = async () => {
-      try {
-        const [tel, rad, incs] = await Promise.all([
-          api.getLatestTelemetry(selectedOperator.id, selectedMachine.id),
-          api.getRadar(),
-          api.getIncidents(selectedOperator.id)
+        const [tel, rad, mapData, evts] = await Promise.all([
+          api.getLiveTelemetry(activeOperator.operator_id, activeMachine.machine_id),
+          api.getSafetyRadar(activeMachine.machine_id),
+          api.getMapEntities(activeMachine.machine_id),
+          api.getSafetyEvents()
         ]);
         setTelemetry(tel);
         setRadar(rad);
-        setIncidents(incs);
+        setMapEntities(mapData);
+        setEvents(evts);
       } catch (err) {
-        console.error('Telemetry polling error', err);
+        console.error('Polling error', err);
       }
     };
 
-    pollLiveMetrics();
-    const interval = setInterval(pollLiveMetrics, 2500);
+    poll();
+    const interval = setInterval(poll, 2500);
     return () => clearInterval(interval);
-  }, [selectedOperator, selectedMachine]);
+  }, [activeOperator, activeMachine]);
 
-  // Seatbelt Toggle Handler
+  // Actions
   const handleToggleSeatbelt = async () => {
-    if (!selectedOperator || !selectedMachine) return;
-    try {
-      await api.toggleSeatbelt(selectedOperator.id, selectedMachine.id);
-      // Immediately refresh telemetry, incidents, and scorecard
-      const [newTel, newIncs, newSc] = await Promise.all([
-        api.getLatestTelemetry(selectedOperator.id, selectedMachine.id),
-        api.getIncidents(selectedOperator.id),
-        api.getScorecard(selectedOperator.id)
+    await api.simulateTelemetry({ toggle_seatbelt: true });
+    if (activeOperator && activeMachine) {
+      const tel = await api.getLiveTelemetry(activeOperator.operator_id, activeMachine.machine_id);
+      setTelemetry(tel);
+    }
+  };
+
+  const handleSimulateNoiseToggle = async () => {
+    const currentNoise = telemetry?.ambient_noise_db || 74.0;
+    const nextNoise = currentNoise > 85.0 ? 74.0 : 89.0;
+    await api.simulateTelemetry({ noise_db: nextNoise });
+    if (activeOperator && activeMachine) {
+      const tel = await api.getLiveTelemetry(activeOperator.operator_id, activeMachine.machine_id);
+      setTelemetry(tel);
+    }
+  };
+
+  const handleSimulateProximity = async () => {
+    await api.simulateTelemetry({ trigger_proximity: true });
+    if (activeOperator && activeMachine) {
+      const [tel, rad, mapData, evts] = await Promise.all([
+        api.getLiveTelemetry(activeOperator.operator_id, activeMachine.machine_id),
+        api.getSafetyRadar(activeMachine.machine_id),
+        api.getMapEntities(activeMachine.machine_id),
+        api.getSafetyEvents()
       ]);
-      setTelemetry(newTel);
-      setIncidents(newIncs);
-      setScorecard(newSc);
-    } catch (err) {
-      console.error('Failed to toggle seatbelt', err);
+      setTelemetry(tel);
+      setRadar(rad);
+      setMapEntities(mapData);
+      setEvents(evts);
     }
   };
 
-  // Simulate Proximity Breach Alert
-  const handleSimulateHazard = async () => {
-    if (!selectedOperator || !selectedMachine) return;
-    try {
-      await api.createIncident(
-        selectedOperator.id,
-        selectedMachine.id,
-        'PROXIMITY_HAZARD',
-        'Simulated Proximity Breach: Hardhat LiDAR sensor detected within 3.2m rear swing blindspot.'
-      );
-      const incs = await api.getIncidents(selectedOperator.id);
-      setIncidents(incs);
-    } catch (err) {
-      console.error('Failed to simulate hazard', err);
-    }
+  const handleAcceptReschedule = async (taskId: string) => {
+    await api.acceptTaskReschedule(taskId);
+    setTasks((prev) =>
+      prev.map((t) => (t.task_id === taskId ? { ...t, status: 'Rescheduled' } : t))
+    );
   };
 
-  // Task Status Update Handler
   const handleUpdateTaskStatus = async (taskId: string, status: string) => {
-    try {
-      await api.updateTaskStatus(taskId, status);
-      setTasks((prev) =>
-        prev.map((t) => (t.task_id === taskId ? { ...t, status: status as any } : t))
-      );
-    } catch (err) {
-      console.error('Failed to update task status', err);
-    }
+    await api.updateTaskStatus(taskId, status);
+    setTasks((prev) =>
+      prev.map((t) => (t.task_id === taskId ? { ...t, status: status as any } : t))
+    );
   };
 
-  if (!selectedOperator || !selectedMachine) {
+  if (!activeOperator || !activeMachine) {
     return (
-      <div className="min-h-screen bg-cab-black text-cat-yellow flex flex-col items-center justify-center font-mono">
-        <div className="w-12 h-12 border-4 border-cat-yellow border-t-transparent rounded-full animate-spin mb-4" />
-        <span className="text-base font-bold tracking-widest uppercase">INITIALIZING OPERATOROS CAB TELEMETRY...</span>
+      <div className="min-h-screen bg-nordic-base text-ice-blue flex flex-col items-center justify-center font-mono">
+        <div className="w-12 h-12 border-4 border-ice-blue border-t-transparent rounded-full animate-spin mb-4" />
+        <span className="text-sm font-bold tracking-widest uppercase">INITIALIZING CAT SMART OPERATOR TABLET...</span>
       </div>
     );
   }
 
+  const cachedWeather = api.getCachedWeather();
+  const currentActiveTask = tasks.find((t) => t.status === 'In Progress') || tasks[0];
+
   return (
-    <div className="min-h-screen bg-cab-black text-gray-100 flex flex-col">
-      {/* 1. Industrial Cab Header Bar */}
-      <CabHeader
-        operators={operators}
-        machines={machines}
-        selectedOperator={selectedOperator}
-        selectedMachine={selectedMachine}
+    <div className="min-h-screen bg-nordic-base text-nordic-text flex flex-col select-none">
+      {/* 1. Cab Top Header */}
+      <CabTopBar
+        operator={activeOperator}
+        machine={activeMachine}
         telemetry={telemetry}
-        currentWeather={currentWeather}
-        onSelectOperator={setSelectedOperator}
-        onSelectMachine={setSelectedMachine}
-        onChangeWeather={setCurrentWeather}
-        onOpenShiftRecap={() => setIsShiftRecapOpen(true)}
-        onOpenLeaderboard={() => setIsLeaderboardOpen(true)}
-        onOpenTraining={() => setIsTrainingOpen(true)}
+        activeView={activeView}
+        cachedWeatherInfo={cachedWeather}
+        onSelectView={(v) => {
+          if (v === 'incident_report') {
+            setIsIncidentReportOpen(true);
+          } else {
+            setActiveView(v);
+          }
+        }}
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenAi={() => setIsAiOpen(true)}
+        onOpenRecap={() => setIsRecapOpen(true)}
+        onToggleSeatbelt={handleToggleSeatbelt}
+        onSimulateNoiseToggle={handleSimulateNoiseToggle}
       />
 
-      {/* Main Single-Page Cab Dashboard Container */}
-      <main className="max-w-[1920px] w-full mx-auto px-4 py-4 flex-1 space-y-4">
-        {/* 2. Predictive Maintenance Nudge Banner */}
-        <MaintenanceBanner maintenance={maintenance} />
-
-        {/* Section 1: Daily Task Queue (Left) & Safety Radar Module (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-          <div className="lg:col-span-6 flex flex-col">
-            <TaskDashboard
-              tasks={tasks}
-              currentWeather={currentWeather}
-              onUpdateStatus={handleUpdateTaskStatus}
-              onSelectTaskForEstimate={(task) => setInspectedTask(task)}
-            />
-          </div>
-
-          <div className="lg:col-span-6 flex flex-col">
-            <SafetyRadarModule
-              telemetry={telemetry}
-              radar={radar}
-              incidents={incidents}
-              onToggleSeatbelt={handleToggleSeatbelt}
-              onSimulateHazard={handleSimulateHazard}
-            />
-          </div>
-        </div>
-
-        {/* Section 2: Anomaly Detection Scorecard (Left) & AI Task Time Estimator (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-          <div className="lg:col-span-6 flex flex-col">
-            <AnomalyScorecard scorecard={scorecard} />
-          </div>
-
-          <div className="lg:col-span-6 flex flex-col">
-            <TaskEstimator
-              initialTask={inspectedTask}
-              currentWeather={currentWeather}
-              operatorSkill={selectedOperator.skill}
-              machineAge={selectedMachine.age_yrs}
-            />
-          </div>
-        </div>
-
-        {/* Section 3: AI Co-Pilot Assistant Panel */}
-        <div className="grid grid-cols-1 gap-4">
-          <AiAssistantPanel
-            operatorId={selectedOperator.id}
-            machineId={selectedMachine.id}
+      {/* Main Tablet Content Area */}
+      <main className="max-w-[1920px] w-full mx-auto px-3 sm:px-5 py-4 flex-1">
+        {activeView === 'shift_briefing' && (
+          <ShiftBriefingView
+            operator={activeOperator}
+            machine={activeMachine}
+            telemetry={telemetry}
+            tasks={tasks}
+            onStartShift={() => setActiveView('current_task')}
+            onNavigateToTasks={() => setActiveView('task_dashboard')}
           />
-        </div>
+        )}
+
+        {activeView === 'task_dashboard' && (
+          <AdaptiveTaskDashboard
+            tasks={tasks}
+            currentWeather={cachedWeather.weather}
+            onAcceptReschedule={handleAcceptReschedule}
+            onUpdateStatus={handleUpdateTaskStatus}
+          />
+        )}
+
+        {activeView === 'current_task' && (
+          <CurrentTaskView
+            currentTask={currentActiveTask}
+            telemetry={telemetry}
+            machine={activeMachine}
+            onCompleteTask={() => handleUpdateTaskStatus(currentActiveTask.task_id, 'Completed')}
+          />
+        )}
+
+        {activeView === 'safety_intel' && (
+          <SafetyIntelligenceView
+            telemetry={telemetry}
+            radar={radar}
+            events={events}
+            onToggleSeatbelt={handleToggleSeatbelt}
+            onSimulateProximity={handleSimulateProximity}
+            onToggleHighNoise={handleSimulateNoiseToggle}
+            onAcknowledgeAlert={(id) => api.acknowledgeEvent(id)}
+          />
+        )}
+
+        {activeView === '2d_map' && mapEntities && (
+          <Live2DSafetyMap mapData={mapEntities} />
+        )}
+
+        {activeView === '360_radar' && (
+          <AroundMeRadarView radar={radar} />
+        )}
+
+        {activeView === 'event_replay' && (
+          <SafetyEventReplay />
+        )}
+
+        {activeView === 'training_hub' && (
+          <PersonalizedTrainingHub
+            operatorId={activeOperator.operator_id}
+            onTrainingCompleted={() => setActiveView('training_analytics')}
+          />
+        )}
+
+        {activeView === 'training_analytics' && (
+          <TrainingEffectivenessView />
+        )}
+
+        {activeView === 'safety_scorecard' && (
+          <OperatorSafetyScorecard operatorId={activeOperator.operator_id} />
+        )}
       </main>
 
-      {/* Cab Footer Status Bar */}
-      <footer className="bg-cab-black border-t border-cab-border py-3 px-4 text-xs font-mono text-gray-400">
+      {/* Tablet Bottom Telematics Status Bar */}
+      <footer className="bg-nordic-card border-t border-nordic-border py-2 px-4 text-xs font-mono text-nordic-muted">
         <div className="max-w-[1920px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>OPERATOROS v1.0 • CATERPILLAR CAB TELEMETRY CLIENT</span>
+            <span className="w-2 h-2 rounded-full bg-frost-green animate-pulse" />
+            <span>CAT SMART OPERATOR ASSISTANT (OPERATOROS) • INDUSTRIAL CAB TABLET SYSTEM</span>
           </div>
           <div className="flex items-center gap-4 text-[11px]">
-            <span>Active Unit: <strong className="text-white">{selectedMachine.id}</strong></span>
-            <span>Operator: <strong className="text-cat-yellow">{selectedOperator.name}</strong></span>
-            <span>Polling Engine: <strong className="text-emerald-400">2.5s HTTP Polling Active</strong></span>
+            <span>Operator: <strong className="text-white">{activeOperator.name}</strong></span>
+            <span>Machine: <strong className="text-ice-blue">{activeMachine.model}</strong></span>
+            <span>Link: <strong className="text-frost-green">2.5s Polling Active</strong></span>
           </div>
         </div>
       </footer>
 
-      {/* Modals */}
-      <TrainingHub
-        operatorId={selectedOperator.id}
-        isOpen={isTrainingOpen}
-        onClose={() => setIsTrainingOpen(false)}
+      {/* Global Modals */}
+      <OperatorLoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        operators={operators}
+        machines={machines}
+        activeOperator={activeOperator}
+        activeMachine={activeMachine}
+        onConfirm={(op, mach) => {
+          setActiveOperator(op);
+          setActiveMachine(mach);
+        }}
       />
 
-      <Leaderboard
-        isOpen={isLeaderboardOpen}
-        onClose={() => setIsLeaderboardOpen(false)}
-        activeOperatorId={selectedOperator.id}
+      <InCabAiModal
+        isOpen={isAiOpen}
+        onClose={() => setIsAiOpen(false)}
+        operatorId={activeOperator.operator_id}
+        machineId={activeMachine.machine_id}
       />
 
-      <ShiftRecapModal
-        isOpen={isShiftRecapOpen}
-        onClose={() => setIsShiftRecapOpen(false)}
-        operatorId={selectedOperator.id}
-        machineId={selectedMachine.id}
+      <ShiftRecapView
+        isOpen={isRecapOpen}
+        onClose={() => setIsRecapOpen(false)}
+        operatorId={activeOperator.operator_id}
+        machineId={activeMachine.machine_id}
+      />
+
+      <IncidentReportModal
+        isOpen={isIncidentReportOpen}
+        onClose={() => setIsIncidentReportOpen(false)}
+        operator={activeOperator}
+        machine={activeMachine}
+        telemetry={telemetry}
       />
     </div>
   );

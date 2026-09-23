@@ -1,0 +1,6 @@
+machine_id,machine_type,power_type,site_type,model,operating_hours,machine_condition,swing_radius_m,danger_zone_m,caution_zone_m
+CAT-336-EX01,Excavator,Diesel,Infrastructure Trenching,Cat 336 Next Gen,3432.5,Optimal,7.2,4.5,9.0
+CAT-950-LD02,Wheel Loader,Diesel,Pit Aggregate Loading,Cat 950M High Lift,5140.0,Good,4.0,5.0,10.0
+CAT-349-EX03,Excavator,Electric,Urban Tunneling,Cat 349E Tethered Electric,1820.0,Optimal,8.0,5.0,10.5
+CAT-D8T-DZ04,Dozer,Diesel,Overburden Stripping,Cat D8T Track-Type Tractor,4210.0,Good,3.5,4.0,8.5
+CAT-777-HT05,Haul Truck,Electric,Quarry Haulage,Cat 777XE Battery-Electric,1150.0,Optimal,5.5,6.0,12.0
